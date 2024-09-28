@@ -19,10 +19,18 @@ const orderSchema = Schema(
       required: true,
     },
     products: {
-      type: [cartProducts],
+      type: [orderProducts],
     },
     totalAmount: {
       type: Number,
+      required: true,
+    },
+    transactionId: {
+      type: String,
+      required: true,
+    },
+    orderId: {
+      type: String,
       required: true,
     },
   },
