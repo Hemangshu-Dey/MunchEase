@@ -3,6 +3,7 @@ import { Order } from "../models/order.model.js";
 import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
 import { response } from "../utils/response.util.js";
+import { productObjectSchema } from "../zodValidationSchemas/product.zodSchema.js";
 
 const createOrder = async (req, res) => {
   const { products, transactionId } = req.body;
@@ -10,6 +11,22 @@ const createOrder = async (req, res) => {
   if (!products || !products.length) {
     return response(res, 400, "Cart is empty", null, "");
   }
+
+  products.forEach((product) => {
+    const result = productObjectSchema.safeParse({
+      product,
+    });
+
+    if (!result.success) {
+      return response(
+        res,
+        400,
+        "Invalid product format received.",
+        "",
+        result.error.errors[0].message
+      );
+    }
+  });
 
   const userid = new mongoose.Types.ObjectId(req.user.id);
 
@@ -19,8 +36,7 @@ const createOrder = async (req, res) => {
     const productsToUpdate = [];
 
     for (let item of products) {
-      const id = new mongoose.Types.ObjectId(item.productId);
-      const product = await Product.findById(id);
+      const product = await Product.findById(item.productId);
 
       if (!product) {
         return response(

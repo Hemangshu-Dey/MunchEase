@@ -3,16 +3,30 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user.model.js";
 import { response } from "../utils/response.util.js";
 import mongoose from "mongoose";
+import {
+  registerSchema,
+  loginSchema,
+  logoutSchema,
+} from "../zodValidationSchemas/auth.zodSchema.js";
 
 const registerUser = async (req, res) => {
   const { username, email, password } = req.body;
 
-  if (
-    [username, email, password].some((item) => {
-      return !item;
-    })
-  )
-    return response(res, 400, "Missing fields received");
+  const result = registerSchema.safeParse({
+    username,
+    email,
+    password,
+  });
+
+  if (!result.success) {
+    return response(
+      res,
+      400,
+      "Failed to register user",
+      "",
+      result.error.errors[0].message
+    );
+  }
 
   try {
     const user = await User.findOne({
@@ -39,8 +53,20 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { identifier, password } = req.body;
 
-  if (!password || !identifier)
-    return response(res, 400, "Missing fields received");
+  const result = loginSchema.safeParse({
+    identifier,
+    password,
+  });
+
+  if (!result.success) {
+    return response(
+      res,
+      400,
+      "Failed to login user",
+      "",
+      result.error.errors[0].message
+    );
+  }
 
   try {
     const user = await User.findOne({
@@ -108,7 +134,19 @@ const loginUser = async (req, res) => {
 const logout = async (req, res) => {
   const { userid } = req.body;
 
-  if (!userid) return response(res, 400, "Failed to log out user");
+  const result = logoutSchema.safeParse({
+    userid,
+  });
+
+  if (!result.success) {
+    return response(
+      res,
+      400,
+      "Failed to logout user",
+      "",
+      result.error.errors[0].message
+    );
+  }
 
   const id = new mongoose.Types.ObjectId(userid);
 

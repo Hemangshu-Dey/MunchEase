@@ -1,6 +1,7 @@
 import { Product } from "../models/product.model.js";
 import { response } from "../utils/response.util.js";
 import mongoose from "mongoose";
+import { productObjectSchema } from "../zodValidationSchemas/product.zodSchema.js";
 
 const getProducts = async (req, res) => {
   const desc = req.query.desc === "true";
@@ -62,6 +63,19 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
+const getProductById = async (req, res) => {
+  const productId = new mongoose.Types.ObjectId(req.query.productId);
+
+  try {
+    const product = await Product.findOne({ _id: productId });
+
+    return response(res, 200, "Product fetched successfully", product, "");
+  } catch (error) {
+    console.log(error);
+    return response(res, 500, "Internal Server Error", null, error);
+  }
+};
+
 const checkProductStock = async (req, res) => {
   const { products } = req.body;
 
@@ -74,6 +88,22 @@ const checkProductStock = async (req, res) => {
       "Products array is required and must not be empty"
     );
   }
+
+  products.forEach((product) => {
+    const result = productObjectSchema.safeParse({
+      product,
+    });
+
+    if (!result.success) {
+      return response(
+        res,
+        400,
+        "Invalid product format received.",
+        "",
+        result.error.errors[0].message
+      );
+    }
+  });
 
   try {
     const productIds = products.map((product) => {
@@ -136,5 +166,6 @@ export {
   getProducts,
   getProductsByName,
   getProductsByCategory,
+  getProductById,
   checkProductStock,
 };

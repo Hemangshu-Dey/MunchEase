@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import { response } from "../utils/response.util.js";
 import mongoose from "mongoose";
+import { addressSchema } from "../zodValidationSchemas/profile.zodSchema.js";
 
 const addAddresses = async (req, res) => {
   const { name, addressLineOne, addressLineTwo, city, state, zip } = req.body;
@@ -8,8 +9,24 @@ const addAddresses = async (req, res) => {
 
   const id = new mongoose.Types.ObjectId(userid);
 
-  if (!name || !addressLineOne || !city || !state || !zip)
-    return response(res, 400, "Empty fields received", null, "");
+  const result = addressSchema.safeParse({
+    name,
+    addressLineOne,
+    addressLineTwo,
+    city,
+    state,
+    zip,
+  });
+
+  if (!result.success) {
+    return response(
+      res,
+      400,
+      "Failed to add address",
+      "",
+      result.error.errors[0].message
+    );
+  }
 
   try {
     const user = await User.findOne({ _id: id });
