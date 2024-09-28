@@ -92,11 +92,9 @@ export default function Register() {
           <div className="flex justify-center mb-4">
             <Icons.pizza className="h-12 w-12 text-green-500" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to MunchEase
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">MunchEase</h1>
           <p className="text-sm text-gray-600">
-            Sign up to start your culinary journey
+            Sign up to explore a world of delicious possibilities.
           </p>
         </div>
         <form className="mt-8 space-y-6">

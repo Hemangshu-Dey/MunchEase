@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,8 @@ import { useToast } from "@/hooks/use-toast";
 import { FaSpinner } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "@/zodValidationSchemas/auth.zodSchema";
+import { currentUser } from "@/utils/atom";
+import { useRecoilState } from "recoil";
 
 interface FormDataType {
   identifier: string;
@@ -22,6 +24,13 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [user, setUser] = useRecoilState(currentUser);
+
+  useEffect(() => {
+    if (user.username) {
+      navigate("/home");
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,7 +61,8 @@ export default function Login() {
         {
           identifier: formData.identifier,
           password: formData.password,
-        }
+        },
+        { withCredentials: true }
       );
 
       setFormData({
@@ -61,6 +71,13 @@ export default function Login() {
       });
 
       if (response.status === 200) {
+        const userObj = {
+          username: response.data.data.username,
+          email: response.data.data.email,
+          userid: response.data.data.id,
+        };
+        setUser(userObj);
+
         toast({
           title: "You have been logged in successfully",
         });
@@ -91,10 +108,10 @@ export default function Login() {
             <Icons.pizza className="h-12 w-12 text-green-500" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back to MunchEase
+            Welcome Back
           </h1>
           <p className="text-sm text-gray-600">
-            Log in to continue your culinary journey
+            Log in to explore a world of delicious possibilities.
           </p>
         </div>
         <form className="mt-8 space-y-6">

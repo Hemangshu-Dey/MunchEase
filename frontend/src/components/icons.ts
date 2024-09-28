@@ -1,10 +1,25 @@
-import { Leaf, ShieldCheck, Lock, ArrowRight, Pizza } from "lucide-react";
+import {
+  Leaf,
+  ShieldCheck,
+  Lock,
+  ArrowRight,
+  Pizza,
+  Search,
+  Filter,
+  X,
+  Menu,
+  ShoppingCart,
+} from "lucide-react";
 
 export const Icons = {
   leaf: Leaf,
   pizza: Pizza,
-  //   spinner: Spinner,
+  search: Search,
   shieldCheck: ShieldCheck,
   lock: Lock,
   arrowRight: ArrowRight,
+  filter: Filter,
+  x: X,
+  menu: Menu,
+  shoppingCart: ShoppingCart,
 };

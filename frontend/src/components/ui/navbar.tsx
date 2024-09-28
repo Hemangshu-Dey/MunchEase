@@ -1,0 +1,234 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import axios from "axios";
+import { currentUser } from "@/utils/atom";
+import { useRecoilState } from "recoil";
+import { useToast } from "@/hooks/use-toast";
+
+export default function Navbar() {
+  const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useRecoilState(currentUser);
+  const [reRender, setReRender] = useState<boolean>(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const validation = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/auth/validation`,
+          { withCredentials: true }
+        );
+
+        if (response.status == 200) {
+          const userObj = {
+            username: response.data.data.username,
+            email: response.data.data.email,
+            userid: response.data.data.id,
+          };
+          setUser(userObj);
+          setReRender(!reRender);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (!user.username) validation();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      console.log(user.userid);
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
+        {
+          userid: user.userid,
+        }
+      );
+
+      if (response.status == 200) {
+        setUser({
+          userid: "",
+          username: "",
+          email: "",
+        });
+
+        toast({
+          title: "Logged out successfully",
+        });
+
+        setReRender(!reRender);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "Error logging out",
+      });
+    }
+  };
+
+  const UserMenu = () => (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="w-10 h-10 rounded-full bg-green-500 text-white font-bold text-lg"
+        >
+          {user.username.charAt(0).toUpperCase()}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onSelect={() => navigate("/profile")}
+        >
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onSelect={() => navigate("/cart")}
+        >
+          Cart
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onSelect={() => navigate("/orders")}
+        >
+          Orders
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" onSelect={handleLogout}>
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+
+  return (
+    <nav className="bg-white shadow-md w-full fixed">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center">
+              <Icons.pizza className="h-8 w-8 text-green-500 mr-2" />
+              <span className="text-xl font-bold text-gray-900">MunchEase</span>
+            </Link>
+          </div>
+          <div className="flex-1 max-w-md mx-4 hidden sm:block">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Icons.search className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+          </div>
+          <div className="hidden sm:flex items-center">
+            {user.userid ? (
+              <UserMenu />
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate("/register")}
+                  variant="ghost"
+                  className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Register
+                </Button>
+                <Button
+                  onClick={() => navigate("/login")}
+                  variant="outline"
+                  className="ml-4 text-green-600 hover:text-green-700 hover:bg-green-50 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Login
+                </Button>
+              </>
+            )}
+          </div>
+          <div className="sm:hidden">
+            <Button
+              variant="ghost"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
+            >
+              <span className="sr-only">Open main menu</span>
+              {isMenuOpen ? (
+                <Icons.x className="block h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Icons.menu className="block h-6 w-6" aria-hidden="true" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+      {isMenuOpen && (
+        <div className="sm:hidden">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {user.userid ? (
+              <>
+                <Button
+                  onClick={() => navigate("/profile")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Profile
+                </Button>
+                <Button
+                  onClick={() => navigate("/cart")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Cart
+                </Button>
+                <Button
+                  onClick={() => navigate("/orders")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Orders
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate("/register")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Register
+                </Button>
+                <Button
+                  onClick={() => navigate("/login")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Login
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}

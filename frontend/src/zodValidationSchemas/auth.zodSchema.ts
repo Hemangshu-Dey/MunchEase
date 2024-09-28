@@ -34,7 +34,7 @@ export const loginSchema = z.object({
     .string({
       required_error: "Identifier (username or email) is required",
     })
-    .min(1, { message: "Username or email cannot be empty" }),
+    .min(1, { message: "Username or Email cannot be empty" }),
   password: z
     .string({
       required_error: "Password is required",
