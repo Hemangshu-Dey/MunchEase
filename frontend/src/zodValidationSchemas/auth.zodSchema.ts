@@ -41,13 +41,3 @@ export const loginSchema = z.object({
     })
     .min(1, { message: "Password cannot be empty" }),
 });
-
-export const logoutSchema = z.object({
-  userid: z
-    .string({
-      required_error: "User ID is required",
-    })
-    .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), {
-      message: "Invalid ObjectId format",
-    }),
-});

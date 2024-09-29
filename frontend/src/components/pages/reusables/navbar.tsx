@@ -11,11 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import { currentUser } from "@/utils/atom";
+import { currentUser, searchFilterString } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Navbar() {
+  const [searchRecoil, setSearchRecoil] = useRecoilState(searchFilterString);
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useRecoilState(currentUser);
@@ -47,6 +48,10 @@ export default function Navbar() {
     if (!user.username) validation();
   }, []);
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchRecoil(e.target.value);
+  };
+
   const handleLogout = async () => {
     try {
       console.log(user.userid);
@@ -54,7 +59,8 @@ export default function Navbar() {
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/logout`,
         {
           userid: user.userid,
-        }
+        },
+        { withCredentials: true }
       );
 
       if (response.status == 200) {
@@ -115,7 +121,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white shadow-md w-full fixed">
+    <nav className="bg-white shadow-md w-full fixed z-[100]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
@@ -129,6 +135,8 @@ export default function Navbar() {
               <Input
                 type="text"
                 placeholder="Search products..."
+                onChange={handleSearchChange}
+                value={searchRecoil}
                 className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

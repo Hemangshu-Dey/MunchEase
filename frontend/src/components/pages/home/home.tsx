@@ -1,22 +1,15 @@
-import { useState } from "react";
-import Navbar from "@/components/ui/navbar";
-import Sidebar from "@/components/ui/sidebar";
-import ProductGrid from "@/components/ui/productGrid";
+import Navbar from "@/components/pages/reusables/navbar";
+import Sidebar from "@/components/pages/reusables/sidebar";
+import ProductGrid from "@/components/pages/home/productGrid";
 
 export default function Home() {
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 ml-64 mt-16 p-4">
-          <ProductGrid
-            sortOrder={sortOrder}
-            selectedCategories={selectedCategories}
-          />
+          <ProductGrid />
         </main>
       </div>
     </div>
