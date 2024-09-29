@@ -5,6 +5,7 @@ import Register from "./components/pages/auth/register";
 import Login from "./components/pages/auth/login";
 import Home from "./components/pages/home/home";
 import Profile from "./components/pages/profile/profile";
+import Cart from "./components/pages/cart/cart";
 import { Toaster } from "@/components/ui/toaster";
 import { RecoilRoot } from "recoil";
 
@@ -32,6 +33,11 @@ function App() {
     {
       path: "/profile",
       element: <Profile />,
+      errorElement: <Error />,
+    },
+    {
+      path: "/cart",
+      element: <Cart />,
       errorElement: <Error />,
     },
   ]);

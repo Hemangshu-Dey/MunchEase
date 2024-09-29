@@ -89,14 +89,18 @@ export default function ProductGrid() {
           }
         );
 
-        const cartData = response.data.data;
+        const cartData: cartResponse[] = response.data.data;
 
-        cartData.forEach((item: cartResponse) => {
-          delete item._id;
-        });
-
-        setCartMapping(cartData);
-        setTotalCartItems(cartData.length);
+        if (Array.isArray(cartData)) {
+          cartData.forEach((item: cartResponse) => {
+            delete item._id;
+          });
+          setCartMapping(cartData);
+          setTotalCartItems(cartData.length);
+        } else {
+          setCartMapping([]);
+          setTotalCartItems(0);
+        }
       } catch (error) {
         console.log(error);
         if (axios.isAxiosError(error)) {

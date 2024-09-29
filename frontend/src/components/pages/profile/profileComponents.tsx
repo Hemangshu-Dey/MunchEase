@@ -16,6 +16,7 @@ import axios from "axios";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { addressSchema } from "@/zodValidationSchemas/profile.zodSchema";
 
 interface Address {
   id: number;
@@ -104,6 +105,14 @@ export default function ProfileComponent() {
   }, [reRender]);
 
   const handleAddAddress = async () => {
+    const result = addressSchema.safeParse(newAddress);
+
+    if (!result.success) {
+      return toast({
+        title: result.error.errors[0].message,
+      });
+    }
+
     setIsLoading(true);
     try {
       console.log(false);

@@ -15,7 +15,7 @@ import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
 
-export default function NavbarProfile() {
+export default function NavbarCart() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [totalCartItems] = useRecoilState(cartCount);
@@ -144,14 +144,9 @@ export default function NavbarProfile() {
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
-          onSelect={() => navigate("/cart")}
+          onSelect={() => navigate("/profile")}
         >
-          Cart
-          {totalCartItems > 0 && (
-            <span className="ml-2 text-sm font-bold text-green-500">
-              ({totalCartItems})
-            </span>
-          )}
+          Profile
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
@@ -227,16 +222,11 @@ export default function NavbarProfile() {
                   Home
                 </Button>
                 <Button
-                  onClick={() => navigate("/cart")}
+                  onClick={() => navigate("/profile")}
                   variant="ghost"
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
-                  Cart
-                  {totalCartItems > 0 && (
-                    <span className="ml-2 text-sm font-bold text-green-500">
-                      ({totalCartItems})
-                    </span>
-                  )}
+                  Profile
                 </Button>
                 <Button
                   onClick={() => navigate("/orders")}
