@@ -1,5 +1,10 @@
 import { atom } from "recoil";
 
+interface ProductResponse {
+  productId: string;
+  quantity: number;
+}
+
 const currentUser = atom({
   key: "currentUser",
   default: {
@@ -29,10 +34,22 @@ const cartCount = atom({
   default: 0,
 });
 
+const totalOrderPrice = atom({
+  key: "totalPrice",
+  default: 0,
+});
+
+const productList = atom<ProductResponse[]>({
+  key: "productList",
+  default: [],
+});
+
 export {
   currentUser,
   sortByFilter,
   categoryFilterList,
   searchFilterString,
   cartCount,
+  totalOrderPrice,
+  productList,
 };

@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { cartCount } from "@/utils/atom";
-import { Minus, Plus, AlertTriangle, X } from "lucide-react";
+import {
+  cartCount,
+  totalOrderPrice,
+  currentUser,
+  productList,
+} from "@/utils/atom";
+import { Minus, Plus, AlertTriangle, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,10 +21,9 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
-import { currentUser } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton"; // Skeleton import
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CartResponse {
   productId: string;
@@ -45,7 +49,9 @@ export default function ImprovedCartComponent() {
   const [errorItems, setErrorItems] = useState<ProductResponse[]>([]);
   const [, setTotalCartItems] = useRecoilState(cartCount);
   const [user, setUser] = useRecoilState(currentUser);
+  const [, setOrderPrice] = useRecoilState(totalOrderPrice);
   const [reRender, setReRender] = useState<boolean>(false);
+  const [, setAllProducts] = useRecoilState(productList);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -273,7 +279,9 @@ export default function ImprovedCartComponent() {
   };
 
   const handlePurchase = () => {
-    // Implement purchase logic here
+    setOrderPrice(totalPrice);
+    setAllProducts(cartMapping);
+    navigate("/payments");
   };
 
   useEffect(() => {
@@ -284,8 +292,30 @@ export default function ImprovedCartComponent() {
     setTotalPrice(newTotal);
   }, [cartMapping, products]);
 
+  if (!cartMapping.length) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col items-center justify-center h-96">
+          <ShoppingCart size={64} className="text-muted text-black" />
+          <h2 className="text-xl font-semibold mt-4 text-muted text-black">
+            Your cart is empty
+          </h2>
+          <p className="text-muted text-black">
+            Add items to your cart to see them here.
+          </p>
+          <Button
+            onClick={() => navigate("/")}
+            variant="outline"
+            className="mt-6 text-green-600 hover:text-green-700 hover:bg-green-50 px-4 py-2 rounded-md text-sm font-medium"
+          >
+            Go Back to Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
-    // Skeleton while data is loading
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-6 text-primary">Your Cart</h1>

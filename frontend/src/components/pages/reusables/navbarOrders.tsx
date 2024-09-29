@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
@@ -11,17 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import { currentUser, searchFilterString, cartCount } from "@/utils/atom";
+import { currentUser, cartCount } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
 
-export default function NavbaHome() {
-  const [searchRecoil, setSearchRecoil] = useRecoilState(searchFilterString);
+export default function NavbarOrders() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useRecoilState(currentUser);
   const [totalCartItems] = useRecoilState(cartCount);
+  const [user, setUser] = useRecoilState(currentUser);
   const [reRender, setReRender] = useState<boolean>(true);
   const { toast } = useToast();
 
@@ -44,7 +42,6 @@ export default function NavbaHome() {
             userid: response.data.data.id,
           };
           setUser(userObj);
-          setReRender(!reRender);
         }
       } catch (error) {
         console.log(error);
@@ -57,6 +54,7 @@ export default function NavbaHome() {
                 username: "",
                 email: "",
               });
+              navigate("/home");
             } else {
               setUser({
                 userid: res.data.data.id,
@@ -70,6 +68,7 @@ export default function NavbaHome() {
               username: "",
               email: "",
             });
+            navigate("/home");
           }
         } else {
           setUser({
@@ -77,16 +76,13 @@ export default function NavbaHome() {
             username: "",
             email: "",
           });
+          navigate("/home");
         }
       }
     };
 
     if (!user.username) validation();
   }, []);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchRecoil(e.target.value);
-  };
 
   const handleLogout = async () => {
     try {
@@ -111,6 +107,7 @@ export default function NavbaHome() {
         toast({
           title: "Logged out successfully",
         });
+        navigate("/home");
       }
     } catch (error) {
       console.log(error);
@@ -140,6 +137,12 @@ export default function NavbaHome() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="cursor-pointer"
+          onSelect={() => navigate("/home")}
+        >
+          Home
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer"
           onSelect={() => navigate("/profile")}
         >
           Profile
@@ -155,12 +158,6 @@ export default function NavbaHome() {
             </span>
           )}
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onSelect={() => navigate("/orders")}
-        >
-          Orders
-        </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onSelect={handleLogout}>
           Logout
         </DropdownMenuItem>
@@ -169,28 +166,14 @@ export default function NavbaHome() {
   );
 
   return (
-    <nav className="bg-white shadow-md w-full fixed z-[100]">
+    <nav className="bg-white shadow-md w-full fixed z-[1000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/home" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <Icons.pizza className="h-8 w-8 text-green-500 mr-2" />
               <span className="text-xl font-bold text-gray-900">MunchEase</span>
             </Link>
-          </div>
-          <div className="flex-1 max-w-md mx-4 hidden sm:block">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search products..."
-                onChange={handleSearchChange}
-                value={searchRecoil}
-                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icons.search className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
           </div>
           <div className="hidden sm:flex items-center">
             {user.userid ? (
@@ -236,6 +219,13 @@ export default function NavbaHome() {
             {user.userid ? (
               <>
                 <Button
+                  onClick={() => navigate("/home")}
+                  variant="ghost"
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  Home
+                </Button>
+                <Button
                   onClick={() => navigate("/profile")}
                   variant="ghost"
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
@@ -253,13 +243,6 @@ export default function NavbaHome() {
                       ({totalCartItems})
                     </span>
                   )}
-                </Button>
-                <Button
-                  onClick={() => navigate("/orders")}
-                  variant="ghost"
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  Orders
                 </Button>
                 <Button
                   onClick={handleLogout}

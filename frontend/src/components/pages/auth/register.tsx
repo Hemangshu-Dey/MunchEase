@@ -88,7 +88,7 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-pink-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full space-y-8">
-        <div className="text-center">
+        <Link to="/home" className="text-center">
           <div className="flex justify-center mb-4">
             <Icons.pizza className="h-12 w-12 text-green-500" />
           </div>
@@ -101,7 +101,7 @@ export default function Register() {
           <p className="text-sm text-gray-600">
             Sign up to explore a world of delicious possibilities.
           </p>
-        </div>
+        </Link>
         <form className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>

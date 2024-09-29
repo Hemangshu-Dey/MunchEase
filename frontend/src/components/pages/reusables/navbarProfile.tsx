@@ -107,8 +107,7 @@ export default function NavbarProfile() {
         toast({
           title: "Logged out successfully",
         });
-
-        setReRender(!reRender);
+        navigate("/home");
       }
     } catch (error) {
       console.log(error);

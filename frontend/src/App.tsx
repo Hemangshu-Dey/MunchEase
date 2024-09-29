@@ -8,6 +8,8 @@ import Profile from "./components/pages/profile/profile";
 import Cart from "./components/pages/cart/cart";
 import { Toaster } from "@/components/ui/toaster";
 import { RecoilRoot } from "recoil";
+import Payment from "./components/pages/payments/payment";
+import Orders from "./components/pages/orders/orders";
 
 function App() {
   const router = createBrowserRouter([
@@ -38,6 +40,16 @@ function App() {
     {
       path: "/cart",
       element: <Cart />,
+      errorElement: <Error />,
+    },
+    {
+      path: "/payments",
+      element: <Payment />,
+      errorElement: <Error />,
+    },
+    {
+      path: "/orders",
+      element: <Orders />,
       errorElement: <Error />,
     },
   ]);

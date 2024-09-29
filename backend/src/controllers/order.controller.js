@@ -3,35 +3,20 @@ import { Order } from "../models/order.model.js";
 import { Cart } from "../models/cart.model.js";
 import { Product } from "../models/product.model.js";
 import { response } from "../utils/response.util.js";
-import { productObjectSchema } from "../zodValidationSchemas/product.zodSchema.js";
 
 const createOrder = async (req, res) => {
-  const { products, transactionId } = req.body;
+  const { products, transactionId, address, totalAmount } = req.body;
 
   if (!products || !products.length) {
     return response(res, 400, "Cart is empty", null, "");
   }
 
-  products.forEach((product) => {
-    const result = productObjectSchema.safeParse({
-      product,
-    });
-
-    if (!result.success) {
-      return response(
-        res,
-        400,
-        "Invalid product format received.",
-        "",
-        result.error.errors[0].message
-      );
-    }
-  });
+  if (!transactionId || !address.name || !totalAmount)
+    return response(res, 400, "Missing fields received", null, "");
 
   const userid = new mongoose.Types.ObjectId(req.user.id);
 
   try {
-    let totalAmount = 0;
     const orderProducts = [];
     const productsToUpdate = [];
 
@@ -41,7 +26,7 @@ const createOrder = async (req, res) => {
       if (!product) {
         return response(
           res,
-          404,
+          402,
           `Product with id ${item.productId} not found`,
           null,
           ""
@@ -51,15 +36,12 @@ const createOrder = async (req, res) => {
       if (product.stock < item.quantity) {
         return response(
           res,
-          400,
+          402,
           `Insufficient stock for product ${product.name} (ID: ${product._id}). Available: ${product.stock}, Requested: ${item.quantity}`,
           null,
           ""
         );
       }
-
-      const subtotal = product.price * item.quantity;
-      totalAmount += subtotal;
 
       orderProducts.push({
         productId: product._id,
@@ -87,6 +69,7 @@ const createOrder = async (req, res) => {
       totalAmount,
       transactionId,
       orderId,
+      address,
     });
 
     await newOrder.save();
@@ -107,7 +90,17 @@ const getOrders = async (req, res) => {
   const userid = new mongoose.Types.ObjectId(req.user.id);
   try {
     const orders = await Order.find({ userid: userid });
-    return response(res, 200, "Orders fetched successfully", orders, "");
+
+    if (orders)
+      return response(res, 200, "Orders fetched successfully", { orders }, "");
+
+    return response(
+      res,
+      200,
+      "Orders fetched successfully",
+      { orders: [] },
+      ""
+    );
   } catch (error) {
     console.error(error);
     if (error.name === "ValidationError") {

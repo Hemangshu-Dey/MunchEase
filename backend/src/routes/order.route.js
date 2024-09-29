@@ -5,4 +5,4 @@ import { authValidation } from "../middlewares/auth.middleware.js";
 export const orderRouter = Router();
 
 orderRouter.route("/createOrder").post(authValidation, createOrder);
-orderRouter.route("/getOrders").post(authValidation, getOrders);
+orderRouter.route("/getOrders").get(authValidation, getOrders);

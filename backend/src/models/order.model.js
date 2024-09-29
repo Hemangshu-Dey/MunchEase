@@ -1,4 +1,6 @@
 import { Schema, model } from "mongoose";
+import { Product } from "./product.model.js";
+import { User } from "./user.model.js";
 
 const orderProducts = Schema({
   productId: {
@@ -7,6 +9,32 @@ const orderProducts = Schema({
   },
   quantity: {
     type: Number,
+    required: true,
+  },
+});
+
+const addressSchema = Schema({
+  name: {
+    type: String,
+    required: [true, "Name should be provided"],
+  },
+  addressLineOne: {
+    type: String,
+    required: true,
+  },
+  addressLineTwo: {
+    type: String,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  zip: {
+    type: String,
     required: true,
   },
 });
@@ -31,6 +59,10 @@ const orderSchema = Schema(
     },
     orderId: {
       type: String,
+      required: true,
+    },
+    address: {
+      type: addressSchema,
       required: true,
     },
   },
