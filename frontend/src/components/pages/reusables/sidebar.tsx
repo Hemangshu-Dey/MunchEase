@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Icons } from "@/components/icons";
-import { sortByFilter, categoryFilterList } from "@/utils/atom";
+import { sortByFilter, categoryFilterList, currentUser } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 
 const categories = [
@@ -26,9 +26,14 @@ export default function Sidebar() {
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [, setSortRecoil] = useRecoilState(sortByFilter);
   const [, setCategoryRecoil] = useRecoilState(categoryFilterList);
+  const [user] = useRecoilState(currentUser);
   const [checkedCategories, setCheckedCategories] = useState<
     Record<string, boolean>
   >(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
+
+  useEffect(() => {
+    handleRemoveFilters();
+  }, [user]);
 
   const handleCategoryChange = (category: string, isChecked: boolean) => {
     setCheckedCategories((prev) => ({

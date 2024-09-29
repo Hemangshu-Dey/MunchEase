@@ -1,5 +1,5 @@
 import NavbarProfile from "../reusables/navbarProfile";
-import ProfileComponent from "../reusables/profileComponents";
+import ProfileComponent from "./profileComponents";
 
 export default function Profile() {
   return (

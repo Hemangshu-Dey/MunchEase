@@ -45,6 +45,10 @@ export default function ProfileComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setReRender(!reRender);
+  }, [user]);
+
+  useEffect(() => {
     const getAddresses = async () => {
       try {
         const res = await axios.get(

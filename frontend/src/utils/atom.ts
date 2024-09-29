@@ -24,4 +24,15 @@ const searchFilterString = atom({
   default: "",
 });
 
-export { currentUser, sortByFilter, categoryFilterList, searchFilterString };
+const cartCount = atom({
+  key: "cartCound",
+  default: 0,
+});
+
+export {
+  currentUser,
+  sortByFilter,
+  categoryFilterList,
+  searchFilterString,
+  cartCount,
+};

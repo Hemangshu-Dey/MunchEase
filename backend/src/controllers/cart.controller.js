@@ -151,4 +151,29 @@ const clearCart = async (req, res) => {
   }
 };
 
-export { addToCart, removeOneFromCart, removeAllFromCart, clearCart };
+const getCart = async (req, res) => {
+  const id = new mongoose.Types.ObjectId(req.user.id);
+
+  try {
+    const cart = await Cart.findOne({ userid: id });
+
+    if (!cart)
+      return response(
+        res,
+        200,
+        "Cart fetched successfully",
+        { products: [] },
+        ""
+      );
+
+    return response(res, 200, "Cart fetched successfully", cart.products, "");
+  } catch (error) {
+    console.error(error);
+    if (error.name === "ValidationError") {
+      return response(res, 400, "Invalid data", null, error.message);
+    }
+    return response(res, 500, "Internal Server Error", null, error.message);
+  }
+};
+
+export { addToCart, removeOneFromCart, removeAllFromCart, clearCart, getCart };

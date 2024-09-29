@@ -23,6 +23,10 @@ export default function NavbarProfile() {
   const { toast } = useToast();
 
   useEffect(() => {
+    setReRender(!reRender);
+  }, [user]);
+
+  useEffect(() => {
     const validation = async () => {
       try {
         const response = await axios.get(
@@ -37,7 +41,6 @@ export default function NavbarProfile() {
             userid: response.data.data.id,
           };
           setUser(userObj);
-          setReRender(!reRender);
         }
       } catch (error) {
         console.log(error);

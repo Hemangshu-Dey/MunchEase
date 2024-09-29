@@ -8,7 +8,7 @@ export default function Home() {
       <NavbarHome />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 ml-64 mt-16 p-4">
+        <main className="flex-1 ml-56 mt-16 p-4">
           <ProductGrid />
         </main>
       </div>

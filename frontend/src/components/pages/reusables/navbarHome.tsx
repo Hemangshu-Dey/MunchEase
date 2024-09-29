@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import { currentUser, searchFilterString } from "@/utils/atom";
+import { currentUser, searchFilterString, cartCount } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
@@ -21,8 +21,13 @@ export default function NavbaHome() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useRecoilState(currentUser);
+  const [totalCartItems] = useRecoilState(cartCount);
   const [reRender, setReRender] = useState<boolean>(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setReRender(!reRender);
+  }, [user]);
 
   useEffect(() => {
     const validation = async () => {
@@ -106,8 +111,6 @@ export default function NavbaHome() {
         toast({
           title: "Logged out successfully",
         });
-
-        setReRender(!reRender);
       }
     } catch (error) {
       console.log(error);
@@ -120,12 +123,19 @@ export default function NavbaHome() {
   const UserMenu = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="w-10 h-10 rounded-full bg-green-500 text-white font-bold text-lg"
-        >
-          {user.username.charAt(0).toUpperCase()}
-        </Button>
+        <div className="relative">
+          <Button
+            variant="ghost"
+            className="w-10 h-10 rounded-full bg-green-500 text-white font-bold text-lg"
+          >
+            {user.username.charAt(0).toUpperCase()}
+          </Button>
+          {totalCartItems > 0 && (
+            <span className="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+              {totalCartItems}
+            </span>
+          )}
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
@@ -139,6 +149,11 @@ export default function NavbaHome() {
           onSelect={() => navigate("/cart")}
         >
           Cart
+          {totalCartItems > 0 && (
+            <span className="ml-2 text-sm font-bold text-green-500">
+              ({totalCartItems})
+            </span>
+          )}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
@@ -233,6 +248,11 @@ export default function NavbaHome() {
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
                   Cart
+                  {totalCartItems > 0 && (
+                    <span className="ml-2 text-sm font-bold text-green-500">
+                      ({totalCartItems})
+                    </span>
+                  )}
                 </Button>
                 <Button
                   onClick={() => navigate("/orders")}
