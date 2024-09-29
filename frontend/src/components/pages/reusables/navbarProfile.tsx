@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { useNavigate } from "react-router-dom";
@@ -11,12 +10,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import { currentUser, searchFilterString } from "@/utils/atom";
+import { currentUser } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 import { useToast } from "@/hooks/use-toast";
+import { getNewAccessToken } from "@/utils/getNewAccessToken";
 
-export default function Navbar() {
-  const [searchRecoil, setSearchRecoil] = useRecoilState(searchFilterString);
+export default function NavbarProfile() {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useRecoilState(currentUser);
@@ -42,15 +41,44 @@ export default function Navbar() {
         }
       } catch (error) {
         console.log(error);
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status == 401) {
+            const res = await getNewAccessToken();
+            if (res === "401") {
+              setUser({
+                userid: "",
+                username: "",
+                email: "",
+              });
+              navigate("/home");
+            } else {
+              setUser({
+                userid: res.data.data.id,
+                username: res.data.data.username,
+                email: res.data.data.email,
+              });
+            }
+          } else {
+            setUser({
+              userid: "",
+              username: "",
+              email: "",
+            });
+            navigate("/home");
+          }
+        } else {
+          setUser({
+            userid: "",
+            username: "",
+            email: "",
+          });
+          navigate("/home");
+        }
       }
     };
 
     if (!user.username) validation();
   }, []);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchRecoil(e.target.value);
-  };
 
   const handleLogout = async () => {
     try {
@@ -60,7 +88,9 @@ export default function Navbar() {
         {
           userid: user.userid,
         },
-        { withCredentials: true }
+        {
+          withCredentials: true,
+        }
       );
 
       if (response.status == 200) {
@@ -97,9 +127,9 @@ export default function Navbar() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="cursor-pointer"
-          onSelect={() => navigate("/profile")}
+          onSelect={() => navigate("/home")}
         >
-          Profile
+          Home
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer"
@@ -121,7 +151,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="bg-white shadow-md w-full fixed z-[100]">
+    <nav className="bg-white shadow-md w-full fixed z-[1000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
@@ -129,20 +159,6 @@ export default function Navbar() {
               <Icons.pizza className="h-8 w-8 text-green-500 mr-2" />
               <span className="text-xl font-bold text-gray-900">MunchEase</span>
             </Link>
-          </div>
-          <div className="flex-1 max-w-md mx-4 hidden sm:block">
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Search products..."
-                onChange={handleSearchChange}
-                value={searchRecoil}
-                className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icons.search className="h-5 w-5 text-gray-400" />
-              </div>
-            </div>
           </div>
           <div className="hidden sm:flex items-center">
             {user.userid ? (
@@ -188,11 +204,11 @@ export default function Navbar() {
             {user.userid ? (
               <>
                 <Button
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/home")}
                   variant="ghost"
                   className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
-                  Profile
+                  Home
                 </Button>
                 <Button
                   onClick={() => navigate("/cart")}

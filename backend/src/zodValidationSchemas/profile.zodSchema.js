@@ -14,7 +14,7 @@ export const addressSchema = z.object({
   state: z.string({
     required_error: "State is required",
   }),
-  zip: z.number({
+  zip: z.string({
     required_error: "Zip code is required",
   }),
 });

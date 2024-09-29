@@ -86,13 +86,18 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-pink-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <Icons.pizza className="h-12 w-12 text-green-500" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">MunchEase</h1>
+          <h1 className="font-extrabold text-gray-900 mb-2">
+            <span className="text-4xl">M</span>
+            <span className="text-2xl">UNCH</span>
+            <span className="text-4xl">E</span>
+            <span className="text-2xl">ASE</span>
+          </h1>
           <p className="text-sm text-gray-600">
             Sign up to explore a world of delicious possibilities.
           </p>

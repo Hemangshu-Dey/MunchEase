@@ -9,6 +9,7 @@ import {
   X,
   Menu,
   ShoppingCart,
+  Plus,
 } from "lucide-react";
 
 export const Icons = {
@@ -22,4 +23,5 @@ export const Icons = {
   x: X,
   menu: Menu,
   shoppingCart: ShoppingCart,
+  plus: Plus,
 };

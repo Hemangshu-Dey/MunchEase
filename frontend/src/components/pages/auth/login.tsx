@@ -101,7 +101,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-pink-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-4">

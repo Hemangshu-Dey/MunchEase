@@ -11,7 +11,6 @@ const categories = [
   "Fruits",
   "Vegetables",
   "Nuts",
-  "Snacks",
   "Beverages",
   "Snacks",
   "Bakery",
@@ -27,11 +26,15 @@ export default function Sidebar() {
   const [categoryList, setCategoryList] = useState<string[]>([]);
   const [, setSortRecoil] = useRecoilState(sortByFilter);
   const [, setCategoryRecoil] = useRecoilState(categoryFilterList);
+  const [checkedCategories, setCheckedCategories] = useState<
+    Record<string, boolean>
+  >(categories.reduce((acc, category) => ({ ...acc, [category]: false }), {}));
 
-  const handleCategoryChange = (
-    category: string,
-    isChecked: string | boolean
-  ) => {
+  const handleCategoryChange = (category: string, isChecked: boolean) => {
+    setCheckedCategories((prev) => ({
+      ...prev,
+      [category]: isChecked,
+    }));
     if (isChecked) {
       setCategoryList((prev) => [...prev, category]);
     } else {
@@ -42,6 +45,16 @@ export default function Sidebar() {
   const handleApplyFilters = () => {
     setSortRecoil(sortOrder);
     setCategoryRecoil(categoryList);
+  };
+
+  const handleRemoveFilters = () => {
+    setSortRecoil("asc");
+    setCategoryRecoil([]);
+    setSortOrder("asc");
+    setCategoryList([]);
+    setCheckedCategories(
+      categories.reduce((acc, category) => ({ ...acc, [category]: false }), {})
+    );
   };
 
   return (
@@ -60,8 +73,9 @@ export default function Sidebar() {
                 <div key={category} className="flex items-center">
                   <Checkbox
                     id={category}
+                    checked={checkedCategories[category]}
                     onCheckedChange={(checked) =>
-                      handleCategoryChange(category, checked)
+                      handleCategoryChange(category, Boolean(checked))
                     }
                   />
                   <Label
@@ -77,7 +91,7 @@ export default function Sidebar() {
 
           <div>
             <h3 className="text-md font-medium mb-2">Sort by price</h3>
-            <RadioGroup defaultValue="asc" onValueChange={setSortOrder}>
+            <RadioGroup value={sortOrder} onValueChange={setSortOrder}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="asc" id="asc" />
                 <Label htmlFor="asc">Low to high</Label>
@@ -89,14 +103,22 @@ export default function Sidebar() {
             </RadioGroup>
           </div>
         </div>
-
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={handleApplyFilters}
-        >
-          Apply Filters
-        </Button>
+        <div className="flex flex-col gap-1">
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={handleApplyFilters}
+          >
+            Apply Filters
+          </Button>
+          <Button
+            className="w-full text-white bg-slate-900 hover:bg-slate-700 hover:text-white"
+            variant="outline"
+            onClick={handleRemoveFilters}
+          >
+            Remove Filters
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import Error from "./components/pages/Parent&Error/error";
 import Register from "./components/pages/auth/register";
 import Login from "./components/pages/auth/login";
 import Home from "./components/pages/home/home";
+import Profile from "./components/pages/profile/profile";
 import { Toaster } from "@/components/ui/toaster";
 import { RecoilRoot } from "recoil";
 
@@ -27,6 +28,11 @@ function App() {
           element: <Login />,
         },
       ],
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
+      errorElement: <Error />,
     },
   ]);
 

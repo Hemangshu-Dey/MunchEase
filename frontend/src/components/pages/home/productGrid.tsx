@@ -71,10 +71,14 @@ export default function ProductGrid() {
       setTotalPages(Math.ceil(response.data.data.totalProducts / 6));
       if (currentPage > Math.ceil(response.data.data.totalProducts / 6))
         setCurrentPage(1);
+
+      console.log(url);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
+
+  const handleAddToCart = async () => {};
 
   return (
     <div className="container mx-auto px-4 w-full">
@@ -103,11 +107,15 @@ export default function ProductGrid() {
                 <p className="text-sm text-gray-600 mb-2 overflow-y-auto max-h-24">
                   {product.description}
                 </p>
-                <p className="font-bold">${product.price.toFixed(2)}</p>
+                <p className="font-bold">₹{product.price.toFixed(2)}</p>
                 <p className="text-sm text-gray-500">Stock: {product.stock}</p>
               </CardContent>
               <CardFooter>
-                <Button className="w-full" disabled={product.stock === 0}>
+                <Button
+                  className="w-full"
+                  disabled={product.stock === 0}
+                  onClick={handleAddToCart}
+                >
                   <Icons.shoppingCart className="mr-2 h-4 w-4" /> Add to Cart
                 </Button>
               </CardFooter>
