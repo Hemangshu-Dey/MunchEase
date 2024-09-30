@@ -8,7 +8,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
-import { currentUser, totalOrderPrice, productList, cartCount } from "@/utils/atom";
+import {
+  currentUser,
+  totalOrderPrice,
+  productList,
+  cartCount,
+} from "@/utils/atom";
 import { useRecoilState } from "recoil";
 
 interface Address {
@@ -34,9 +39,9 @@ export default function PaymentsComponent() {
   const [address, setAddress] = useState<Address | null>(null);
   const [, setUser] = useRecoilState(currentUser);
   const [totalPrice] = useRecoilState(totalOrderPrice);
-  const [,setTotalCartItems] = useRecoilState(cartCount);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [, setTotalCartItems] = useRecoilState(cartCount);
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>({
     cardNumber: "",
     expiryDate: "",
@@ -114,7 +119,7 @@ export default function PaymentsComponent() {
       !paymentDetails.expiryDate ||
       !paymentDetails.cvv ||
       !paymentDetails.nameOnCard ||
-      !address // Check if an address is selected
+      !address
     ) {
       return toast({
         title: "Please complete all payment and address fields",
@@ -159,8 +164,8 @@ export default function PaymentsComponent() {
   const handleAddressSelection = (selectedIndex: string) => {
     const selectedAddressIndex = parseInt(selectedIndex);
     const selected = addresses[selectedAddressIndex];
-    setAddress(selected); // Set the selected address in state
-    setSelectedAddress(selectedIndex); // Update selected radio button value
+    setAddress(selected);
+    setSelectedAddress(selectedIndex);
   };
 
   return (
@@ -181,27 +186,42 @@ export default function PaymentsComponent() {
               <CardTitle>Shipping Address</CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup
-                value={selectedAddress}
-                onValueChange={handleAddressSelection}
-              >
-                {addresses?.map((address, index) => (
-                  <div key={index} className="flex items-center space-x-2 mb-2">
-                    <RadioGroupItem
-                      value={index.toString()}
-                      id={index.toString()}
-                    />
-                    <Label htmlFor={index.toString()}>
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold">{address.name}</span>
-                        <span>
-                          {address.city}, {address.state} {address.zip}
-                        </span>
-                      </div>
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+              {addresses.length > 0 ? (
+                <RadioGroup
+                  value={selectedAddress}
+                  onValueChange={handleAddressSelection}
+                >
+                  {addresses.map((address, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center space-x-2 mb-2"
+                    >
+                      <RadioGroupItem
+                        value={index.toString()}
+                        id={index.toString()}
+                      />
+                      <Label htmlFor={index.toString()}>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold">{address.name}</span>
+                          <span>
+                            {address.city}, {address.state} {address.zip}
+                          </span>
+                        </div>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              ) : (
+                <div className="flex flex-col gap-4 items-center">
+                  <p>No addresses found</p>
+                  <Button
+                    onClick={() => navigate("/profile")}
+                    className="w-full"
+                  >
+                    Go to profile
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -257,6 +277,7 @@ export default function PaymentsComponent() {
                 onClick={handlePaymentAndOrder}
                 className="w-full"
                 size="lg"
+                disabled={addresses.length > 0 ? false : true}
               >
                 Pay ₹{totalPrice}
               </Button>
