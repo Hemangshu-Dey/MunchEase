@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { getNewAccessToken } from "@/utils/getNewAccessToken";
-import { currentUser, totalOrderPrice, productList } from "@/utils/atom";
+import { currentUser, totalOrderPrice, productList, cartCount } from "@/utils/atom";
 import { useRecoilState } from "recoil";
 
 interface Address {
@@ -34,6 +34,7 @@ export default function PaymentsComponent() {
   const [address, setAddress] = useState<Address | null>(null);
   const [, setUser] = useRecoilState(currentUser);
   const [totalPrice] = useRecoilState(totalOrderPrice);
+  const [,setTotalCartItems] = useRecoilState(cartCount);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>({
@@ -140,7 +141,10 @@ export default function PaymentsComponent() {
         { withCredentials: true }
       );
 
-      if (res.status == 200) navigate("/orders");
+      if (res.status == 200) {
+        setTotalCartItems(0);
+        navigate("/orders");
+      }
     } catch (error) {
       console.log(error);
       if (axios.isAxiosError(error)) {
